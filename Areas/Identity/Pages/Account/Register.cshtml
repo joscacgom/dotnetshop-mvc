@@ -1,0 +1,119 @@
+﻿@page
+@model RegisterModel
+
+<div class="container text-center">
+    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <h2>Create a new account.</h2>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <div class="row">
+            <div class="col">
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label asp-for="Input.Email">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Input.Password">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                    <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Name" class="form-control" autocomplete="given-name" aria-required="true" placeholder="First Name" />
+                    <label asp-for="Input.Name">Name</label>
+                    <span asp-validation-for="Input.Name" class="text-danger"></span>
+                </div>
+                @if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee)){
+                    <div class="form-floating mb-3">
+                        <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select" aria-required="true">
+                            <option disabled selected value="">Select a role</option>
+                        </select>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select" aria-required="true">
+                            <option disabled selected value="">Select a Company</option>
+                        </select>
+                    </div>
+                }
+            </div>
+            <div class="col">
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Address" class="form-control" autocomplete="family-name" aria-required="true" placeholder="Last Name" />
+                    <label asp-for="Input.Address">Address</label>
+                    <span asp-validation-for="Input.Address" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.City" class="form-control" autocomplete="tel" aria-required="true" placeholder="Phone Number" />
+                    <label asp-for="Input.City">City</label>
+                    <span asp-validation-for="Input.City" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.State" class="form-control" autocomplete="tel" aria-required="true" placeholder="Phone Number" />
+                    <label asp-for="Input.State">State</label>
+                    <span asp-validation-for="Input.State" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PostalCode" class="form-control" autocomplete="tel" aria-required="true" placeholder="Phone Number" />
+                    <label asp-for="Input.PostalCode">Postal Code</label>
+                    <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="tel" aria-required="true" placeholder="Phone Number" />
+                    <label asp-for="Input.PhoneNumber">Phone Number</label>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+               
+            </div>
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+     <div class="col-md-12 p-3 text-center">
+                <section>
+                    </hr>                    
+                    @{
+                        if ((Model.ExternalLogins?.Count ?? 0) == 0 || User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee)){
+                            <div>
+                                <p>
+                                    External Login is not enabled.
+                                </p>
+                            </div>
+                        }
+                        else {
+                            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                <div>
+                                    <p>
+                                        @foreach (var provider in Model.ExternalLogins!) {
+                                            <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                        }
+                                    </p>
+                                </div>
+                            </form>
+                        }
+                    }
+                </section>
+            </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('Input_Role').addEventListener('change', function () {
+            var role = this.value;
+            if (role === 'Company') {
+                document.getElementById('Input_CompanyId').disabled = false;
+            } else {
+                document.getElementById('Input_CompanyId').disabled = true;
+                document.getElementById('Input_CompanyId').value = '';
+                document.getElementById('Input_CompanyId').selectedIndex = 0;
+            }
+        });
+
+
+    </script>
+}
